@@ -3,6 +3,7 @@
 ; Primary use-case is studying foreign language VNs while occasionally doing dictionary look-ups.
 ; This is an adaption of a AHKv2 script by オヤビーン/beangate; found on the GameSentenceMiner Discord.
 ; Default hotkeys are (Ctrl + Alt + 1) to enable, and (Ctrl + Alt + 2) to disable.
+; Holding the Right Alt key while hovering over the on-top window will hide it until the key is released.
 
 ; Config
 exception_exe = ppInk.exe
@@ -11,21 +12,10 @@ exception_exe = ppInk.exe
 global targetWin := ""
 BreakLoop = 0
 
-; Function to set window transparency
-SetWindowTransparency(winId, transparency) {
-    if (winId) {
-        WinSet, Transparent, transparency, winId
-    }
-}
-
 ; Turn ON with Ctrl + Alt + 1
 ^!1::
     global targetWin
-
-;MsgBox Pressed.
-
     WinGet, currentWin, ProcessName, A
-        ;MsgBox %currentwin%
 	if currentwin = Explorer.EXE
 	{
 		MsgBox This script cannot be used to target Windows Explorer.
@@ -69,13 +59,27 @@ Loop {
         ; Get mouse position
         MouseGetPos, mouseX, mouseY, mouseWin
         ; Check if the mouse is over the target window
-        if (mouseWin = targetWin)
+		if (mouseWin = targetWin)
 		{
 			WinSet, Transparent, 255, ahk_id %targetWin%
+			; Check for Right Alt key and hide window if held
+			if GetKeyState("RAlt", P)
+			{
+				WinHide, ahk_id %targetWin%
+				Loop
+				{
+					Sleep, 100
+					if !GetKeyState("RAlt", P)
+					{
+						WinShow, ahk_id %targetWin%
+						Break
+					}
+				}
+			}
         }
 		else
 		{
-			; Hide the window unless it's a Firefox popup or an excluded executable
+			; Hide the window unless it's a Firefox popup (ex. Yomitan) or an excluded executable
 			WinGetClass, ClassName, ahk_id %mouseWin%
 			WinGet, currentWinLoop, ProcessName, A
 			if ClassName = MozillaDropShadowWindowClass
