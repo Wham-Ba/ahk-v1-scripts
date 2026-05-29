@@ -13,7 +13,7 @@ Toggles the active window to be 'always on-top', and transparent unless hovered 
 Primary use-case is studying foreign language VNs while occasionally doing dictionary look-ups.
 This is an adaption of a AHKv2 script by オヤビーン/beangate; found on the GameSentenceMiner Discord.
 
-Default hotkeys are (**Ctrl + Alt + 1**) to enable, and (**Ctrl + Alt + 2**) to disable. Holding **Right Alt** can be used to temporrily hide the on-top window.
+Default hotkeys are (**Ctrl + Alt + 1**) to enable, and (**Ctrl + Alt + 2**) to disable. Holding **Right Alt** can be used to temporarily hide the on-top window.
 
 ### Preview:
 
