@@ -1,8 +1,8 @@
 #NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
-; #Warn  ; Enable warnings to assist with detecting common errors.
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
+; Check config file
 IniRead, DestinationFolder, %A_ScriptDir%\singlefile.ini, Section1, DestinationFolder1, %A_Space%
 IniRead, vSourceFolder, %A_ScriptDir%\singlefile.ini, Section1, SourceFolder, %A_Space%
 IniRead, vSourceFile1, %A_ScriptDir%\singlefile.ini, Section1, FilePreset1, %A_Space%
@@ -16,11 +16,16 @@ IniRead, vSourceFolder2, %A_ScriptDir%\singlefile.ini, Section1, SourceFolder2, 
 IniRead, vSourceFolder3, %A_ScriptDir%\singlefile.ini, Section1, SourceFolder3, %A_Space%
 IniRead, vSourceFolder4, %A_ScriptDir%\singlefile.ini, Section1, SourceFolder4, %A_Space%
 
+; Variables
 RoboFirstClick = 0
+
+; ==================
+; ====== GUI =======
+; ==================
 
 Gui, Add, GroupBox, w240 h48 Section, Source
 
-;Source File Select
+; Source File Select
 Gui, Add, Edit, x51 yp+16 w160 h20 vSourceFile1, %vSourceFile1%
 Gui, Add, Button, x+5 w30 h20 vSource gSelectFile, ...
 
@@ -33,7 +38,7 @@ Gui, Add, Button, x+5 w30 h20 vSourceFileButton3 gSourceFileButton3, ...
 Gui, Add, Edit, x51 y22 w160 h20 vSourceFile4, %vSourceFile4%
 Gui, Add, Button, x+5 w30 h20 vSourceFileButton4 gSourceFileButton4, ...
 
-;Source Folder Select
+; Source Folder Select
 Gui, Add, Edit, x51 yp+0 w160 h20 vSourceFolder, %vSourceFolder%
 Gui, Add, Button, x+5 w30 h20 vFolderSource gFolderSource, ...
 
@@ -46,6 +51,7 @@ Gui, Add, Button, x+5 w30 h20 vFolderSource3 gFolderSource3, ...
 Gui, Add, Edit, x51 yp+0 w160 h20 vSourceFolder4, %vSourceFolder4%
 Gui, Add, Button, x+5 w30 h20 vFolderSource4 gFolderSource4, ...
 
+; Other GUI elements
 Gui, Add, GroupBox, x10 yp+24 w240 h70 Section, Destination
 Gui, Add, Edit, xp+4 yp+16 w196 h20 vDestinationFolder, %DestinationFolder%
 Gui, Add, Button, x+5 w30 h20 vSource2 gSelectFolder, ...
@@ -61,8 +67,6 @@ Gui, Add, Edit, x16 yp+18 w147 h20 vCustomName
 Gui, Add, Button, gOk x174 y122 w76 h57 Default, OK
 
 Gui, Add, Button, x13 y87 vRobocopy gRobocopy w23, ↪
-;Gui, Add, CheckBox, x117 y46 vChk2ndFolder gChk2ndFolder, Allow Secondary Backup
-;GuiControl, Disable, FileNaming
 
 Gui, Add, Radio, gRadioFile vRadioFile Checked x58 y6, File
 Gui, Add, Radio, gRadioFolder vRadioFolder xp+38 yp+0, Folder
@@ -407,8 +411,16 @@ RadioFolder:
 	goSub FolderPreset
 return
 
+; ===================
+; === MAIN BACKUP ===
+; ===================
+
 Ok:
 Gui, Submit, NoHide
+
+; ==================
+; Single file backup
+; ==================
 
 if (RadioFile = 1)
 {
@@ -451,9 +463,6 @@ if (RadioTimestamp = 1)
 		MsgBox, 64, %A_ScriptName%, This version of the file has already been backed up.`n%OutNameNoExt%-%vSourceFileTime%
 		return
 	}
-	;MsgBox, 64, %A_ScriptName%, Timestamp is on.
-	;MsgBox, 64, %A_ScriptName%, Folder: %OutDir% File:%OutFileName%
-	;MsgBox, 64, %A_ScriptName%, Run, copy "%SourceFile%" "%DestinationFolder%\%OutNameNoExt%-%A_Now%\"
 	RunWait, xcopy "%SourceFile%" "%DestinationFolder%\%OutNameNoExt%-%vSourceFileTime%\"
 	SoundBeep, 220
 }
@@ -470,7 +479,6 @@ else if (RadioCustom = 1)
 		MsgBox, 36, %A_ScriptName%, An identical version of this file has already been backed up.`n%OutNameNoExt%-%vSourceFileTime%`n`nWould you like to rename this backup to your custom name?
 		IfMsgBox Yes
 		{
-			;MsgBox, FileMoveDir, %DestinationFolder%\%OutNameNoExt%-%vSourceFileTime%, %DestinationFolder%\%OutNameNoExt%-%CustomName%, R
 			DoubleCheckFolder = %DestinationFolder%\%OutNameNoExt%-%CustomName%
 			if( InStr( FileExist(DoubleCheckFolder), "D") )
 			{
@@ -486,13 +494,15 @@ else if (RadioCustom = 1)
 			return
 		}
 	}
-	;MsgBox, 64, %A_ScriptName%, Custom Name is on.
-	;MsgBox, 64, %A_ScriptName%, Run, copy "%SourceFile%" "%DestinationFolder%\%OutNameNoExt%-%CustomName%\"
 	RunWait, xcopy "%SourceFile%" "%DestinationFolder%\%OutNameNoExt%-%CustomName%\"
 	SoundBeep, 220
 }
 return
 }
+
+; =============
+; Folder backup
+; =============
 
 if (RadioFolder = 1)
 {
@@ -533,16 +543,10 @@ if (RadioFolder = 1)
 	file := SourceFolder	; added an extra folder level 
 	arr := StrSplit(file, "\")		; split the string named file at all occurrences of \ and create an array with it
 	dirname := arr[(arr.MaxIndex()-0)]	; take the next-to-last element of the created array, last is the file name
-	;msgbox % dirname		; just for demonstration
 
 	if (RadioTimestamp = 1)
 	{
-		;MsgBox, 64, %A_ScriptName%, Timestamp is on.
-		;MsgBox, 64, %A_ScriptName%, Folder: %OutDir% File:%OutFileName%
-		;MsgBox, 64, %A_ScriptName%, Run, copy "%SourceFile%" "%DestinationFolder%\%OutNameNoExt%-%A_Now%\"
 		RunWait, xcopy "%SourceFolder%" "%DestinationFolder%\%dirname%-%A_Now%\" %SubTag%
-		;SoundPlay, *48
-		;MsgBox, 64, %A_ScriptName%, xcopy "%SourceFolder%" "%DestinationFolder%\%dirname%-%A_Now%\" %SubTag%
 		SoundBeep, 220
 	}
 	else if (RadioCustom = 1)
@@ -552,16 +556,16 @@ if (RadioFolder = 1)
 			MsgBox, 64, %A_ScriptName%, No custom name has been entered.
 			return
 		}
-		;MsgBox, 64, %A_ScriptName%, Custom Name is on.
-		;MsgBox, 64, %A_ScriptName%, Run, copy "%SourceFile%" "%DestinationFolder%\%OutNameNoExt%-%CustomName%\"
 		RunWait, xcopy "%SourceFolder%" "%DestinationFolder%\%dirname%-%CustomName%\" %SubTag%
-		;SoundPlay, *48
-		;MsgBox, 64, %A_ScriptName%, xcopy "%SourceFolder%" "%DestinationFolder%\%dirname%-%CustomName%\"
 		SoundBeep, 220
 	}
 return
 }
 return
+
+; ================
+; === MAIN END ===
+; ================
 
 SelectFile:
 FileSelectFile, OutputVar, , 1
@@ -570,7 +574,6 @@ if (OutputVar = "")
 else
 	IniWrite, %OutputVar%, %A_ScriptDir%\singlefile.ini, Section1, FilePreset1
 	GuiControl,, SourceFile1, %OutputVar%
-    ;MsgBox, You selected folder "%OutputVar%".
 return
 
 SelectFolder:
@@ -580,7 +583,6 @@ if (OutputVar = "")
 else
 	IniWrite, %OutputVar%, %A_ScriptDir%\singlefile.ini, Section1, DestinationFolder1
 	GuiControl,, DestinationFolder, %OutputVar%
-    ;MsgBox, You selected folder "%OutputVar%".
 return
 
 SelectFolder2:
@@ -599,7 +601,6 @@ if (OutputVar = "")
 else
 	IniWrite, %OutputVar%, %A_ScriptDir%\singlefile.ini, Section1, SourceFolder
 	GuiControl,, SourceFolder, %OutputVar%
-    ;MsgBox, You selected folder "%OutputVar%".
 return
 
 FolderSource2:
@@ -609,7 +610,6 @@ if (OutputVar = "")
 else
 	IniWrite, %OutputVar%, %A_ScriptDir%\singlefile.ini, Section1, SourceFolder2
 	GuiControl,, SourceFolder2, %OutputVar%
-    ;MsgBox, You selected folder "%OutputVar%".
 return
 
 FolderSource3:
@@ -619,7 +619,6 @@ if (OutputVar = "")
 else
 	IniWrite, %OutputVar%, %A_ScriptDir%\singlefile.ini, Section1, SourceFolder3
 	GuiControl,, SourceFolder3, %OutputVar%
-    ;MsgBox, You selected folder "%OutputVar%".
 return
 
 FolderSource4:
@@ -629,7 +628,6 @@ if (OutputVar = "")
 else
 	IniWrite, %OutputVar%, %A_ScriptDir%\singlefile.ini, Section1, SourceFolder4
 	GuiControl,, SourceFolder4, %OutputVar%
-    ;MsgBox, You selected folder "%OutputVar%".
 return
 
 SourceFileButton2:
@@ -639,7 +637,6 @@ if (OutputVar = "")
 else
 	IniWrite, %OutputVar%, %A_ScriptDir%\singlefile.ini, Section1, FilePreset2
 	GuiControl,, SourceFile2, %OutputVar%
-    ;MsgBox, You selected folder "%OutputVar%".
 return
 
 SourceFileButton3:
@@ -649,7 +646,6 @@ if (OutputVar = "")
 else
 	IniWrite, %OutputVar%, %A_ScriptDir%\singlefile.ini, Section1, FilePreset3
 	GuiControl,, SourceFile3, %OutputVar%
-    ;MsgBox, You selected folder "%OutputVar%".
 return
 
 SourceFileButton4:
@@ -659,7 +655,6 @@ if (OutputVar = "")
 else
 	IniWrite, %OutputVar%, %A_ScriptDir%\singlefile.ini, Section1, FilePreset4
 	GuiControl,, SourceFile4, %OutputVar%
-    ;MsgBox, You selected folder "%OutputVar%".
 return
 
 QuickBackup:
@@ -672,7 +667,6 @@ if (RadioFolder = 1)
 
 if (RadioFile = 1)
 {
-
 	if (FilePreset = 1)
 		SourceFile = %SourceFile1%
 	if (FilePreset = 2)
@@ -697,13 +691,9 @@ if !FileExist(SourceFile)
 SplitPath, SourceFile, OutFileName, OutDir, , OutNameNoExt
 
 QuickRevertCheckForDuplicate = %OutDir%\QuickRevert\%OutFileName%
-;MsgBox, 36, %A_ScriptName%, %QuickRevertCheckForDuplicate%
 
 FileGetTime, vSourceFileTime, %SourceFile%
 FileGetTime, vQuickSaveFileTime, %QuickRevertCheckForDuplicate%
-
-;MsgBox, 52, %A_ScriptName%, SourceFileTime: %vSourceFileTime%'n'nRevert Time: %vQuickSaveFileTime%
-;return
 
 if (vSourceFileTime = vQuickSaveFileTime)
 	{
@@ -717,14 +707,11 @@ if (vSourceFileTime = vQuickSaveFileTime)
 		IfMsgBox Yes
 		{
 			QuickRevertCheckForDuplicateTimestamp = %OutDir%\QuickRevert\%OutNameNoExt%-%vQuickSaveFileTime%\%OutFileName%
-			;MsgBox, 36, %A_ScriptName%, %QuickRevertCheckForDuplicateTimestamp%
-			;return
 			if FileExist(QuickRevertCheckForDuplicateTimestamp)
 			{
 			}
 			else
 			{
-			;MsgBox, 36, %A_ScriptName%, xcopy "%QuickRevertCheckForDuplicate%" "%OutDir%\QuickRevert\%OutNameNoExt%-%vQuickSaveFileTime%\"
 			RunWait, xcopy "%QuickRevertCheckForDuplicate%" "%OutDir%\QuickRevert\%OutNameNoExt%-%vQuickSaveFileTime%\"
 			FileRecycle, %QuickRevertCheckForDuplicate%
 			}
@@ -778,7 +765,6 @@ FileGetTime, vSourceFileTime, %SourceFile%
 SplitPath, SourceFile, OutFileName, OutDir, , OutNameNoExt
 
 QuickRevertCheckForDuplicate = %OutDir%\QuickRevert\%OutFileName%
-;MsgBox, 36, %A_ScriptName%, %QuickRevertCheckForDuplicate%
 
 FileGetTime, vQuickSaveFileTime, %QuickRevertCheckForDuplicate%
 
@@ -794,17 +780,13 @@ if (vSourceFileTime = vQuickSaveFileTime)
 		IfMsgBox Yes
 		{
 			MakeSureSourceIsBackedUp = %OutDir%\QuickRevert\%OutNameNoExt%-%vSourceFileTime%\%OutFileName%
-			;MsgBox, 64, %A_ScriptName%, %MakeSureSourceIsBackedUp%
-			;return
 			if FileExist(MakeSureSourceIsBackedUp)
 			{
 				FileRecycle, %SourceFile%
 				RunWait, xcopy "%OutDir%\QuickRevert\%OutFileName%" "%OutDir%"
-				;MsgBox, 64, %A_ScriptName%, xcopy "%OutDir%\QuickRevert\%OutFileName%" "%OutDir%"
 			}
 			else
 			{
-				;MsgBox, 64, %A_ScriptName%, xcopy "%SourceFile%" "%OutDir%\QuickRevert\%OutNameNoExt%-%vSourceFileTime%\"
 				RunWait, xcopy "%SourceFile%" "%OutDir%\QuickRevert\%OutNameNoExt%-%vSourceFileTime%\"
 				FileRecycle, %SourceFile%
 				RunWait, xcopy "%OutDir%\QuickRevert\%OutFileName%" "%OutDir%"
