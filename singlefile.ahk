@@ -12,6 +12,10 @@ IniRead, vSourceFile2, %A_ScriptDir%\singlefile.ini, Section1, FilePreset2, %A_S
 IniRead, vSourceFile3, %A_ScriptDir%\singlefile.ini, Section1, FilePreset3, %A_Space%
 IniRead, vSourceFile4, %A_ScriptDir%\singlefile.ini, Section1, FilePreset4, %A_Space%
 
+IniRead, vSourceFolder2, %A_ScriptDir%\singlefile.ini, Section1, SourceFolder2, %A_Space%
+IniRead, vSourceFolder3, %A_ScriptDir%\singlefile.ini, Section1, SourceFolder3, %A_Space%
+IniRead, vSourceFolder4, %A_ScriptDir%\singlefile.ini, Section1, SourceFolder4, %A_Space%
+
 RoboFirstClick = 0
 
 Gui, Add, GroupBox, w240 h48 Section, Source
@@ -30,8 +34,17 @@ Gui, Add, Edit, x51 y22 w160 h20 vSourceFile4, %vSourceFile4%
 Gui, Add, Button, x+5 w30 h20 vSourceFileButton4 gSourceFileButton4, ...
 
 ;Source Folder Select
-Gui, Add, Edit, x15 yp+0 w196 h20 vSourceFolder, %vSourceFolder%
+Gui, Add, Edit, x51 yp+0 w160 h20 vSourceFolder, %vSourceFolder%
 Gui, Add, Button, x+5 w30 h20 vFolderSource gFolderSource, ...
+
+Gui, Add, Edit, x51 yp+0 w160 h20 vSourceFolder2, %vSourceFolder2%
+Gui, Add, Button, x+5 w30 h20 vFolderSource2 gFolderSource2, ...
+
+Gui, Add, Edit, x51 yp+0 w160 h20 vSourceFolder3, %vSourceFolder3%
+Gui, Add, Button, x+5 w30 h20 vFolderSource3 gFolderSource3, ...
+
+Gui, Add, Edit, x51 yp+0 w160 h20 vSourceFolder4, %vSourceFolder4%
+Gui, Add, Button, x+5 w30 h20 vFolderSource4 gFolderSource4, ...
 
 Gui, Add, GroupBox, x10 yp+24 w240 h70 Section, Destination
 Gui, Add, Edit, xp+4 yp+16 w196 h20 vDestinationFolder, %DestinationFolder%
@@ -56,6 +69,7 @@ Gui, Add, Radio, gRadioFolder vRadioFolder xp+38 yp+0, Folder
 
 Gui, Add, CheckBox, x147 y6 Checked vIncSubdir, Subfolders
 Gui, Add, DDL, vFilePreset gFilePreset y21 x15 w30, 1||2|3|4
+Gui, Add, DDL, vFolderPreset gFolderPreset y21 x15 w30, 1||2|3|4
 
 Gui, Add, GroupBox, x10 y180 w95 h42 Section, Quick Revert
 Gui, Add, Button, x16 y195 vQuickBackup gQuickBackup w23, SAVE
@@ -69,7 +83,14 @@ return
 InitialGUI:
 	GuiControl, Disable, CustomName
 	GuiControl, Hide, SourceFolder
+	GuiControl, Hide, SourceFolder2
+	GuiControl, Hide, SourceFolder3
+	GuiControl, Hide, SourceFolder4
+	GuiControl, Hide, FolderPreset
 	GuiControl, Hide, FolderSource
+	GuiControl, Hide, FolderSource2
+	GuiControl, Hide, FolderSource3
+	GuiControl, Hide, FolderSource4
 	GuiControl, Disable, IncSubdir
 	GuiControl, Disable, DestinationFolder2
 	GuiControl, Disable, Source22
@@ -140,6 +161,27 @@ Gui, Submit, NoHide
 			Run, %SourceFolder%
 		}
     }
+	If ( A_GuiControl == "FolderSource2" )
+    {
+        if( InStr( FileExist(SourceFolder), "D") )
+		{
+			Run, %SourceFolder2%
+		}
+    }
+	If ( A_GuiControl == "FolderSource3" )
+    {
+        if( InStr( FileExist(SourceFolder), "D") )
+		{
+			Run, %SourceFolder3%
+		}
+    }
+	If ( A_GuiControl == "FolderSource4" )
+    {
+        if( InStr( FileExist(SourceFolder), "D") )
+		{
+			Run, %SourceFolder4%
+		}
+    }
 	If ( A_GuiControl == "Source22" )
     {
         if( InStr( FileExist(DestinationFolder2), "D") )
@@ -198,6 +240,58 @@ FilePreset:
 		GuiControl, Show, SourceFileButton4
 		GuiControl, Hide, SourceFile1
 		GuiControl, Hide, Source
+		return
+	}
+return
+
+FolderPreset:
+	Gui, Submit, NoHide
+	if (FolderPreset = 1)
+	{
+		GuiControl, Show, FolderSource
+		GuiControl, Hide, FolderSource2
+		GuiControl, Hide, FolderSource3
+		GuiControl, Hide, FolderSource4
+		GuiControl, Show, SourceFolder
+		GuiControl, Hide, SourceFolder2
+		GuiControl, Hide, SourceFolder3
+		GuiControl, Hide, SourceFolder4
+		return
+	}
+	if (FolderPreset = 2)
+	{
+		GuiControl, Hide, FolderSource
+		GuiControl, Show, FolderSource2
+		GuiControl, Hide, FolderSource3
+		GuiControl, Hide, FolderSource4
+		GuiControl, Hide, SourceFolder
+		GuiControl, Show, SourceFolder2
+		GuiControl, Hide, SourceFolder3
+		GuiControl, Hide, SourceFolder4
+		return
+	}
+	if (FolderPreset = 3)
+	{
+		GuiControl, Hide, FolderSource
+		GuiControl, Hide, FolderSource2
+		GuiControl, Show, FolderSource3
+		GuiControl, Hide, FolderSource4
+		GuiControl, Hide, SourceFolder
+		GuiControl, Hide, SourceFolder2
+		GuiControl, Show, SourceFolder3
+		GuiControl, Hide, SourceFolder4
+		return
+	}
+	if (FolderPreset = 4)
+	{
+		GuiControl, Hide, FolderSource
+		GuiControl, Hide, FolderSource2
+		GuiControl, Hide, FolderSource3
+		GuiControl, Show, FolderSource4
+		GuiControl, Hide, SourceFolder
+		GuiControl, Hide, SourceFolder2
+		GuiControl, Hide, SourceFolder3
+		GuiControl, Show, SourceFolder4
 		return
 	}
 return
@@ -273,9 +367,16 @@ return
 
 RadioFile:
 	GuiControl, Hide, SourceFolder
+	GuiControl, Hide, SourceFolder2
+	GuiControl, Hide, SourceFolder3
+	GuiControl, Hide, SourceFolder4
 	GuiControl, Hide, FolderSource
+	GuiControl, Hide, FolderSource2
+	GuiControl, Hide, FolderSource3
+	GuiControl, Hide, FolderSource4
 	GuiControl, Disable, IncSubdir
 	GuiControl, Show, FilePreset
+	GuiControl, Hide, FolderPreset
 	
 	GuiControl, Enable, QuickBackup
 	GuiControl, Enable, QuickRestore
@@ -291,6 +392,7 @@ RadioFolder:
 	GuiControl, Hide, Source
 	GuiControl, Enable, IncSubdir
 	GuiControl, Hide, FilePreset
+	GuiControl, Show, FolderPreset
 	
 	GuiControl, Hide, SourceFile2
 	GuiControl, Hide, SourceFile3
@@ -301,6 +403,8 @@ RadioFolder:
 	
 	GuiControl, Disable, QuickBackup
 	GuiControl, Disable, QuickRestore
+	
+	goSub FolderPreset
 return
 
 Ok:
@@ -392,6 +496,16 @@ return
 
 if (RadioFolder = 1)
 {
+
+	if (FolderPreset = 1)
+		SourceFolder = %SourceFolder%
+	if (FolderPreset = 2)
+		SourceFolder = %SourceFolder2%
+	if (FolderPreset = 3)
+		SourceFolder = %SourceFolder3%		
+	if (FolderPreset = 4)
+		SourceFolder = %SourceFolder4%
+
 	if (SourceFolder = "")
 	{
 		MsgBox, 64, %A_ScriptName%, No source folder selected.
@@ -485,6 +599,36 @@ if (OutputVar = "")
 else
 	IniWrite, %OutputVar%, %A_ScriptDir%\singlefile.ini, Section1, SourceFolder
 	GuiControl,, SourceFolder, %OutputVar%
+    ;MsgBox, You selected folder "%OutputVar%".
+return
+
+FolderSource2:
+FileSelectFolder, OutputVar, , 3
+if (OutputVar = "")
+    return
+else
+	IniWrite, %OutputVar%, %A_ScriptDir%\singlefile.ini, Section1, SourceFolder2
+	GuiControl,, SourceFolder2, %OutputVar%
+    ;MsgBox, You selected folder "%OutputVar%".
+return
+
+FolderSource3:
+FileSelectFolder, OutputVar, , 3
+if (OutputVar = "")
+    return
+else
+	IniWrite, %OutputVar%, %A_ScriptDir%\singlefile.ini, Section1, SourceFolder3
+	GuiControl,, SourceFolder3, %OutputVar%
+    ;MsgBox, You selected folder "%OutputVar%".
+return
+
+FolderSource4:
+FileSelectFolder, OutputVar, , 3
+if (OutputVar = "")
+    return
+else
+	IniWrite, %OutputVar%, %A_ScriptDir%\singlefile.ini, Section1, SourceFolder4
+	GuiControl,, SourceFolder4, %OutputVar%
     ;MsgBox, You selected folder "%OutputVar%".
 return
 
