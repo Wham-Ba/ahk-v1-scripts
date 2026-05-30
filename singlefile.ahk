@@ -390,8 +390,6 @@ RadioFile:
 return
 
 RadioFolder:
-	GuiControl, Show, SourceFolder
-	GuiControl, Show, FolderSource
 	GuiControl, Hide, SourceFile1
 	GuiControl, Hide, Source
 	GuiControl, Enable, IncSubdir
