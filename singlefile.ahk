@@ -167,21 +167,21 @@ Gui, Submit, NoHide
     }
 	If ( A_GuiControl == "FolderSource2" )
     {
-        if( InStr( FileExist(SourceFolder), "D") )
+        if( InStr( FileExist(SourceFolder2), "D") )
 		{
 			Run, %SourceFolder2%
 		}
     }
 	If ( A_GuiControl == "FolderSource3" )
     {
-        if( InStr( FileExist(SourceFolder), "D") )
+        if( InStr( FileExist(SourceFolder3), "D") )
 		{
 			Run, %SourceFolder3%
 		}
     }
 	If ( A_GuiControl == "FolderSource4" )
     {
-        if( InStr( FileExist(SourceFolder), "D") )
+        if( InStr( FileExist(SourceFolder4), "D") )
 		{
 			Run, %SourceFolder4%
 		}
