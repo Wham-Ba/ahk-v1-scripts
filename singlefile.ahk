@@ -516,7 +516,6 @@ else if (RadioCustom = 1)
 
 return
 }
-return
 
 ; =============
 ; Folder backup
