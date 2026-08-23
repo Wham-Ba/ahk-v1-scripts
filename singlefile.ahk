@@ -449,6 +449,13 @@ if !FileExist(SourceFile)
 	return
 }
 
+if( !InStr( FileExist(DestinationFolder), "D") )
+{
+	MsgBox, 52, %A_ScriptName%, Destination folder does not exist. `n`nWould you like to create it?
+	IfMsgBox, No
+		return
+}
+
 FileGetTime, vSourceFileTime, %SourceFile%
 
 SplitPath, SourceFile, OutFileName, OutDir, , OutNameNoExt
@@ -495,8 +502,21 @@ else if (RadioCustom = 1)
 	RunWait, xcopy "%SourceFile%" "%DestinationFolder%\%OutNameNoExt%-%CustomName%\"
 	SoundBeep, 220
 }
+
+	if (FilePreset = 1)
+		IniWrite, %SourceFile%, %A_ScriptDir%\singlefile.ini, Section1, FilePreset1
+	if (FilePreset = 2)
+		IniWrite, %SourceFile%, %A_ScriptDir%\singlefile.ini, Section1, FilePreset2
+	if (FilePreset = 3)
+		IniWrite, %SourceFile%, %A_ScriptDir%\singlefile.ini, Section1, FilePreset3	
+	if (FilePreset = 4)
+		IniWrite, %SourceFile%, %A_ScriptDir%\singlefile.ini, Section1, FilePreset4
+
+	IniWrite, %DestinationFolder%, %A_ScriptDir%\singlefile.ini, Section1, DestinationFolder1
+
 return
 }
+return
 
 ; =============
 ; Folder backup
@@ -529,6 +549,12 @@ if (RadioFolder = 1)
 		MsgBox, 64, %A_ScriptName%, Source folder does not exist.
 		return
 	}
+	if( !InStr( FileExist(DestinationFolder), "D") )
+	{
+		MsgBox, 52, %A_ScriptName%, Destination folder does not exist. `n`nWould you like to create it?
+		IfMsgBox, No
+			return
+	}
 	if (IncSubDir = 1)
 	{
 		SubTag = /s
@@ -557,6 +583,18 @@ if (RadioFolder = 1)
 		RunWait, xcopy "%SourceFolder%" "%DestinationFolder%\%dirname%-%CustomName%\" %SubTag%
 		SoundBeep, 220
 	}
+	
+	if (FolderPreset = 1)
+		IniWrite, %SourceFolder%, %A_ScriptDir%\singlefile.ini, Section1, SourceFolder
+	if (FolderPreset = 2)
+		IniWrite, %SourceFolder%, %A_ScriptDir%\singlefile.ini, Section1, SourceFolder2
+	if (FolderPreset = 3)
+		IniWrite, %SourceFolder%, %A_ScriptDir%\singlefile.ini, Section1, SourceFolder3	
+	if (FolderPreset = 4)
+		IniWrite, %SourceFolder%, %A_ScriptDir%\singlefile.ini, Section1, SourceFolder4
+	
+	IniWrite, %DestinationFolder%, %A_ScriptDir%\singlefile.ini, Section1, DestinationFolder1
+	
 return
 }
 return
@@ -695,8 +733,8 @@ FileGetTime, vQuickSaveFileTime, %QuickRevertCheckForDuplicate%
 
 if (vSourceFileTime = vQuickSaveFileTime)
 	{
-	MsgBox, 64, %A_ScriptName%, Your Quick Save for this file is already identical to the current version of the Source File.
-	return
+		MsgBox, 64, %A_ScriptName%, Your Quick Save for this file is already identical to the current version of the Source File.
+		return
 	}
 
 	if FileExist(QuickRevertCheckForDuplicate)
@@ -710,8 +748,8 @@ if (vSourceFileTime = vQuickSaveFileTime)
 			}
 			else
 			{
-			RunWait, xcopy "%QuickRevertCheckForDuplicate%" "%OutDir%\QuickRevert\%OutNameNoExt%-%vQuickSaveFileTime%\"
-			FileRecycle, %QuickRevertCheckForDuplicate%
+				RunWait, xcopy "%QuickRevertCheckForDuplicate%" "%OutDir%\QuickRevert\%OutNameNoExt%-%vQuickSaveFileTime%\"
+				FileRecycle, %QuickRevertCheckForDuplicate%
 			}
 		}
 		else
