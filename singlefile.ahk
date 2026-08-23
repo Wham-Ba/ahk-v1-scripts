@@ -469,6 +469,11 @@ if (RadioTimestamp = 1)
 		return
 	}
 	RunWait, xcopy "%SourceFile%" "%DestinationFolder%\%OutNameNoExt%-%vSourceFileTime%\"
+	if ErrorLevel   ; i.e. it's not blank or zero.
+	{
+		MsgBox, 16, ,An error occured while copying the file.`n`nPlease ensure that the targeted file is not in use.
+		return
+	}
 	SoundBeep, 220
 }
 else if (RadioCustom = 1)
@@ -500,6 +505,11 @@ else if (RadioCustom = 1)
 		}
 	}
 	RunWait, xcopy "%SourceFile%" "%DestinationFolder%\%OutNameNoExt%-%CustomName%\"
+	if ErrorLevel   ; i.e. it's not blank or zero.
+	{
+		MsgBox, 16, ,An error occured while copying the file.`n`nPlease ensure that the targeted file is not in use.
+		return
+	}
 	SoundBeep, 220
 }
 
@@ -570,6 +580,11 @@ if (RadioFolder = 1)
 	if (RadioTimestamp = 1)
 	{
 		RunWait, xcopy "%SourceFolder%" "%DestinationFolder%\%dirname%-%A_Now%\" %SubTag%
+		if ErrorLevel   ; i.e. it's not blank or zero.
+		{
+				MsgBox, 16, ,An error occured while copying some or all files.`n`nPlease ensure that the targeted files are not in use.
+				return
+		}
 		SoundBeep, 220
 	}
 	else if (RadioCustom = 1)
@@ -580,6 +595,11 @@ if (RadioFolder = 1)
 			return
 		}
 		RunWait, xcopy "%SourceFolder%" "%DestinationFolder%\%dirname%-%CustomName%\" %SubTag%
+		if ErrorLevel   ; i.e. it's not blank or zero.
+		{
+				MsgBox, 16, ,An error occured while copying some or all files.`n`nPlease ensure that the targeted files are not in use.
+				return
+		}
 		SoundBeep, 220
 	}
 	
