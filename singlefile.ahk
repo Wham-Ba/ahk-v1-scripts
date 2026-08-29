@@ -778,8 +778,23 @@ if (vSourceFileTime = vQuickSaveFileTime)
 	}
 	
 RunWait, xcopy "%SourceFile%" "%OutDir%\QuickRevert\"
+	if ErrorLevel   ; i.e. it's not blank or zero.
+	{
+			MsgBox, 16, ,An error occured while copying the file.`n`nPlease ensure that the targeted file is not in use.
+			return
+	}
 SoundBeep, 220
 SoundBeep, 420
+
+	if (FilePreset = 1)
+		IniWrite, %SourceFile%, %A_ScriptDir%\singlefile.ini, Section1, FilePreset1
+	if (FilePreset = 2)
+		IniWrite, %SourceFile%, %A_ScriptDir%\singlefile.ini, Section1, FilePreset2
+	if (FilePreset = 3)
+		IniWrite, %SourceFile%, %A_ScriptDir%\singlefile.ini, Section1, FilePreset3	
+	if (FilePreset = 4)
+		IniWrite, %SourceFile%, %A_ScriptDir%\singlefile.ini, Section1, FilePreset4
+
 }
 return
 
